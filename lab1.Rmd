@@ -40,4 +40,20 @@ head(nuevo_df)
 ```{r}
 barplot(table(nuevo_df$First_sexual_intercourse), main = " Edad a la que tuvo el primer encuentro sexual.", xlab = "Edad", ylab = "Cantidad de Personas", col = "steelblue" , border = "pink")
 ```
+```{r}
+boxplot(nuevo_df$Number_of_sexual_partners, main = "Number_of_sexual_partners", xlab = "Registro por año")
+```
+
+```{r}
+# 
+# ggplot(data = nuevo_df, aes(x = Number_of_sexual_partners)) + 
+#   geom_histogram(aes(y=..density.., fill = ..count..))+
+#   scale_fill_gradient(low = "#DCDCDC", high = "#7C7C7C")+
+#   stat_function(fun = dnorm, colour = "firebrick",
+#                 args = list(mean = mean(nuevo_df$Number_of_sexual_partners),
+#                             sd = sd(nuevo_df$Number_of_sexual_partners)))+
+#   ggtitle("Cantidad de parejas sexuales que ha tenido la paciente desde que 
+# inició su vida sexual ") + 
+#   theme_bw()
+```
 
