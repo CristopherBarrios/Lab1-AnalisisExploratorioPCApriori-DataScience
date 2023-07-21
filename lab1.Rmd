@@ -1,0 +1,43 @@
+---
+title: "lab1"
+author: 'Cristopher Barrios,'
+date: "21/7/2023"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+df = read.csv("./risk_factors_cervical_cancer.csv")
+```
+
+
+```{r}
+# Crear un nuevo DataFrame seleccionando solo las columnas deseadas
+nuevo_df <- data.frame(
+  Age = df$Age,
+  Number_of_sexual_partners = as.numeric(df$Number.of.sexual.partners),
+  First_sexual_intercourse = as.numeric(df$First.sexual.intercourse),
+  Num_of_pregnancies = as.numeric(df$Num.of.pregnancies),
+  Smokes = as.numeric(df$Smokes),
+  Hormonal_Contraceptives = as.numeric(df$Hormonal.Contraceptives),
+  IUD = as.numeric(df$IUD),
+  STDs = as.numeric(df$STDs),
+  Dx_Cancer = df$Dx.Cancer,
+  Dx_HPV = df$Dx.HPV,
+  Biopsy = df$Biopsy
+)
+
+# Opcionalmente, puedes renombrar las columnas si deseas utilizar nombres más cortos
+colnames(nuevo_df) <- c("Age", "Number_of_sexual_partners", "First_sexual_intercourse",
+                        "Num_of_pregnancies", "Smokes", "Hormonal_Contraceptives",
+                        "IUD", "STDs", "Dx_Cancer", "Dx_HPV", "Biopsy")
+
+# Ver las primeras filas del nuevo DataFrame
+head(nuevo_df)
+
+```
+```{r}
+barplot(table(nuevo_df$First_sexual_intercourse), main = " Edad a la que tuvo el primer encuentro sexual.", xlab = "Edad", ylab = "Cantidad de Personas", col = "steelblue" , border = "pink")
+```
+
