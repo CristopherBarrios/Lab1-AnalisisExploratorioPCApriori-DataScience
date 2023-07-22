@@ -5,7 +5,7 @@ Creado por:
 - Cristopher Jose Rodolfo Barrios Solis
 
 
-[Instrucciones](./lab1.pdf)
+[Instrucciones](./Lab1.pdf)
 
 [PDF - Informe](./.pdf)
 
