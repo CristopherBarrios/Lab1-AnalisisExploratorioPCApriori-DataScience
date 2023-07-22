@@ -8,7 +8,7 @@ Creado por:
 
 [Instrucciones](./Laboratorio1.pdf)
 
-[PDF - Informe](./lab1.pdf)
+[PDF - Informe](./Lab1.pdf)
 
 [HTML - Informe](./lab1.html)
 
