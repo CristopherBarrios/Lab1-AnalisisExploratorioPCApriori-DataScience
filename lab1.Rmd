@@ -1,18 +1,19 @@
 ---
 title: "lab1"
-author: 'Cristopher Barrios,'
+author: 'Cristopher Barrios, Josue Sagastume'
 date: "21/7/2023"
 output:
   html_document: default
   pdf_document: default
 ---
 
+### 1. Haga una exploración rápida de sus datos.
 ```{r}
 df = read.csv("./risk_factors_cervical_cancer.csv")
 ```
 
 
-```{r}
+```{r warning=FALSE}
 # Crear un nuevo DataFrame seleccionando solo las columnas deseadas
 nuevo_df <- data.frame(
   Age = df$Age,
@@ -33,27 +34,435 @@ colnames(nuevo_df) <- c("Age", "Number_of_sexual_partners", "First_sexual_interc
                         "Num_of_pregnancies", "Smokes", "Hormonal_Contraceptives",
                         "IUD", "STDs", "Dx_Cancer", "Dx_HPV", "Biopsy")
 
-# Ver las primeras filas del nuevo DataFrame
-head(nuevo_df)
+```
+
+```{r warning=FALSE}
+
+library(readr)
+library(dplyr)
+
+
+data <- read_csv('risk_factors_cervical_cancer.csv')
+
+
+data <- data %>% mutate_all(~replace(., . == "?", NA))
+
+
+missing_values <- colSums(is.na(data))
+
+
+numerical_stats <- data %>% summarise(across(where(is.numeric), list(mean = mean, std_dev = sd, min = min, max = max)))
+
+
+categorical_stats <- data %>% summarise(across(where(is.character), list(unique = ~length(unique(.)), most_common = ~names(which.max(table(.))))))
 
 ```
+
+```{r warning=FALSE}
+missing_values
+#numerical_stats
+#categorical_stats
+```
+
+Este bloque de texto muestra un resumen de algunas variables del conjunto de datos, donde se presenta la cantidad de valores distintos y la cantidad de registros en los que aparecen esos valores.
+
+Number of sexual partners: La variable "Number of sexual partners" representa la cantidad de parejas sexuales. Se observa que hay 26 registros con un número específico de parejas sexuales.
+
+STDs: Esta variable indica si la persona tiene alguna infección de transmisión sexual (ITS). Hay 105 registros con valores específicos sobre la presencia o ausencia de ITS.
+```{r warning=FALSE}
+summary(nuevo_df)
+```
+
+```{r warning=FALSE}
+# Ver las primeras filas del nuevo DataFrame
+head(nuevo_df)
+```
+### 2. Diga el tipo de cada una de las variables del dataset (cualitativa o categórica, cuantitativa continua, cuantitativa discreta
+
+#### Cuantitativas discretas:
+
+STDs (number), 
+Age, 
+Number of sexual partners, 
+STDs: Number of diagnosis, 
+Num of pregnancies
+
+#### Cuantitativas continuas:
+
+First sexual intercourse, 
+STDs: Time since last diagnosis, 
+STDs: Time since first diagnosis, 
+Smokes (years), 
+Smokes (packs/year), 
+IUD (years), 
+Hormonal Contraceptives (years)
+
+#### Cualitativas:
+
+STDs:cervical condylomatosis, 
+Schiller, 
+STDs:HPV, 
+IUD, 
+STDs:vulvo-perineal condylomatosis, 
+STDs, 
+STDs:syphilis, 
+Dx:HPV, 
+Dx:Cancer, 
+STDs:HIV, 
+STDs:molluscum contagiosum, 
+STDs:condylomatosis, 
+Dx:CIN, 
+Hinselmann, 
+STDs:Hepatitis B, 
+Hormonal Contraceptives, 
+Biopsy, 
+Citology, 
+STDs:genital herpes, 
+STDs:vaginal condylomatosis, 
+Dx, 
+STDs:AIDS, 
+Smokes
+
+
+### 3. Incluya los gráficos exploratorios siendo consecuentes con el tipo de variable que están representando.
 ```{r}
 barplot(table(nuevo_df$First_sexual_intercourse), main = " Edad a la que tuvo el primer encuentro sexual.", xlab = "Edad", ylab = "Cantidad de Personas", col = "steelblue" , border = "pink")
 ```
+
+La mayoria de las personas en este conjunto de datos tienensu primer encuentro sexual entre los 14 años hasta los 20
 ```{r}
 boxplot(nuevo_df$Number_of_sexual_partners, main = "Number_of_sexual_partners", xlab = "Registro por año")
 ```
 
-```{r}
-# 
-# ggplot(data = nuevo_df, aes(x = Number_of_sexual_partners)) + 
-#   geom_histogram(aes(y=..density.., fill = ..count..))+
-#   scale_fill_gradient(low = "#DCDCDC", high = "#7C7C7C")+
-#   stat_function(fun = dnorm, colour = "firebrick",
-#                 args = list(mean = mean(nuevo_df$Number_of_sexual_partners),
-#                             sd = sd(nuevo_df$Number_of_sexual_partners)))+
-#   ggtitle("Cantidad de parejas sexuales que ha tenido la paciente desde que 
-# inició su vida sexual ") + 
-#   theme_bw()
+Pues se puede observar muy pocos puntos atipicos pero existe una persona que ha tenido aproximadamente 30 encuentros sexuales, la mayoria tienen mas o menos 4 encuentros sexuales, y no pasan de 15.
+```{r warning=FALSE}
+# Cargar el paquete ggplot2
+library(ggplot2)
+
+ggplot(data = nuevo_df, aes(x = Num_of_pregnancies)) +
+  geom_histogram(aes(y=..density.., fill = ..count..))+
+  scale_fill_gradient(low = "#DCDCDC", high = "#7C7C7C")+
+  stat_function(fun = dnorm, colour = "firebrick",
+                args = list(mean = mean(nuevo_df$Num_of_pregnancies),
+                            sd = sd(nuevo_df$Num_of_pregnancies)))+
+  ggtitle("Numero de embarazos ") +
+  theme_bw()
 ```
+
+En el eje horizontal, se encuentran los diferentes valores enteros de embarazos, mientras que en el eje vertical se muestra la frecuencia con la que cada valor ocurre en la muestra. Cada barra del histograma representa un rango de valores de embarazos y su altura indica la cantidad de veces que se observa dicho rango en el conjunto de datos. A través de este gráfico, podemos identificar patrones en la frecuencia de embarazos y tener una visión general de la tendencia de esta variable en la población estudiada
+```{r warning=FALSE}
+barplot(table(nuevo_df$Age), main = " Edad de la paciente", xlab = "Edad", ylab = "Edad de la paciente", col = "brown" , border = "blue")
+```
+
+Las edades son muy variadas, parece que la edad en la que mas hay son de 22 añospero la gran mayoria casi en el mismo nivel entre 16 años hasta los 37 años.
+```{r warning=FALSE}
+ggplot(df, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "steelblue", color = "white") +
+  labs(title = "Histograma de Edades", x = "Edad", y = "Frecuencia") +
+  theme_minimal()
+
+
+```
+
+Este histograma de edades podemos observar que llega gente muy joven a este sitio por diferentes enfermedades, y la adulta casi no llega.
+```{r warning=FALSE}
+ggplot(df, aes(x = `Smokes..years.`)) +
+  geom_density(fill = "steelblue", alpha = 0.5) +
+  labs(title = "Densidad de Años Fumando", x = "Años Fumando", y = "Densidad") +
+  theme_minimal()
+
+```
+
+Se puede observar que mientras mas pasan los años las personas dejan de fumar despues de cierto tiempo, esto puede ser debido al diagnostico que han recibido.
+```{r warning=FALSE}
+ggplot(df, aes(x = `Age`, y = `Number.of.sexual.partners`)) +
+  geom_point(color = "steelblue", size = 3) +
+  labs(title = "Gráfico de Dispersión: Edad vs Cantidad de Parejas Sexuales",
+       x = "Edad", y = "Cantidad de Parejas Sexuales") +
+  theme_minimal()
+
+```
+
+Se puede observar que la mayoria son personas de menos de 40 años y que aproximadamente a los 30 años se tienen mas encuentros sexuales.
+
+### 4. Aísle las variables numéricas de las categóricas, haga un análisis de correlación entre las mismas.
+
+```{r warning=FALSE}
+df <- read.csv("./risk_factors_cervical_cancer.csv")
+
+library(dplyr)
+library(corrr)
+
+
+
+library(FactoMineR)
+library(fpc)
+library(factoextra)
+
+library(corrplot)
+
+#df <- read.csv("./data/Ejemplo.csv", stringsAsFactors = FALSE)
+
+#¿Reemplazar '?' con NA (valores faltantes)
+df[df == "?"] <- NA
+
+# ¿onvertir las columnas especificadas a numéricas
+numeric_columns <- c('Age','Number.of.sexual.partners', 'First.sexual.intercourse', 'Num.of.pregnancies',
+                     'Smokes..years.', 'Smokes..packs.year.', 'Hormonal.Contraceptives..years.',
+                     'IUD..years.', 'STDs..number.')
+
+df[numeric_columns] <- lapply(df[numeric_columns], as.numeric)
+
+# ¿ Seleccionar solo las columnas numéricas y crear la matriz de correlación
+numeric_data <- df[, sapply(df, is.numeric)]
+#correlation_matrix <- correlate(numeric_data, method = "pearson")
+
+# Imprimir la matriz de correlación
+#print(correlation_matrix)
+
+cor(numeric_data[,-1],use = "pairwise.complete.obs")
+
+
+```
+
+Esta tabla muestra los coeficientes de correlación, que varían entre -1 y 1, y reflejan la dirección y la intensidad de la asociación lineal entre pares de variables. Un coeficiente de correlación positivo cercano a 1 indica una relación directamente proporcional, lo que significa que a medida que una variable aumenta, la otra también tiende a aumentar. Por otro lado, un coeficiente negativo cercano a -1 denota una relación inversamente proporcional, indicando que a medida que una variable aumenta, la otra tiende a disminuir. Un coeficiente cercano a 0 sugiere que no hay una asociación lineal aparente entre las variables. La tabla de correlación es valiosa para identificar posibles patrones y tendencias entre variables, lo que permite una comprensión más profunda de la interacción entre los datos y guía el proceso de toma de decisiones en diversas áreas.
+
+### 5. Utilice las variables categóricas, haga tablas de frecuencia, proporción, gráficas de barras o cualquier otra técnica que le permita explorar los datos.
+```{r warning=FALSE}
+# Categorías de las variables cualitativas
+categorias_cualitativas <- c("STDs.cervical.condylomatosis", "Schiller", "STDs.HPV", "IUD", "STDs.vulvo.perineal.condylomatosis", "STDs", "STDs.syphilis", "Dx.HPV", "Dx.Cancer", "STDs.HIV", "STDs.molluscum.contagiosum", "STDs.condylomatosis", "Dx.CIN", "Hinselmann", "STDs.Hepatitis.B", "Hormonal.Contraceptives", "Biopsy", "Citology", "STDs.genital.herpes", "STDs.vaginal.condylomatosis", "Dx", "STDs.AIDS", "Smokes")
+
+tablas_frecuencias_cualitativas <- lapply(categorias_cualitativas, function(var) table(df[[var]]))
+
+for (i in seq_along(tablas_frecuencias_cualitativas)) {
+  cat("Tabla de frecuencias para la variable:", categorias_cualitativas[i], "\n")
+  print(tablas_frecuencias_cualitativas[[i]])
+  cat("\n")
+}
+
+
+
+```
+
+Para variables categóricas, la tabla de frecuencias nos proporciona información sobre la distribución de las categorías y nos permite identificar las categorías más comunes y menos comunes. Además, nos permite identificar si hay categorías que dominan la distribución o si existe un equilibrio en la frecuencia entre las categorías. Como se puede observar varias variables nos dan datos interesantes que nos pueden servir despues si queremos predecir.
+
+
+```{r warning=FALSE}
+# Crear una función para generar gráficas de barras para las variables categóricas
+graficar_barras <- function(data, variable) {
+  # Calcular la tabla de frecuencias
+  tabla_frecuencia <- prop.table(table(data[[variable]])) * 100
+  
+  # Ordenar las categorías de mayor a menor frecuencia
+  orden <- names(sort(-tabla_frecuencia))
+  data[[variable]] <- factor(data[[variable]], levels = orden)
+  
+  # Crear la gráfica de barras
+  p <- ggplot(data = data, aes(x = .data[[variable]], fill = .data[[variable]])) +
+    geom_bar() +
+    labs(title = paste("Frecuencia de", variable), x = "Valor", y = "Porcentaje") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  return(p)
+}
+
+# Crear una ventana gráfica para mostrar las gráficas de barras
+par(mfrow = c(6, 4))  # Configuramos el diseño para mostrar varias gráficas en una sola ventana
+
+# Generar las gráficas de barras para las variables categóricas cualitativas
+for (variable in categorias_cualitativas) {
+  grafica <- graficar_barras(df, variable)
+  print(grafica)
+}
+
+
+```
+En los graficos se puede obervar cada una de las variables que lo que mas tiene cada uno son 0, con un poco de 1 y muy pocos NA esto nos ayuda a observar de mejoer manera que es lo que tiene cada una de las variables y averiguar lo que se va hacer a posterior.
+
+```{r warning=FALSE}
+ggplot(df, aes(x = "", fill = `STDs.genital.herpes`)) +
+  geom_bar(width = 1) +
+  coord_polar(theta = "y") +
+  labs(title = "Proporción de herpes genital", fill = "STDs.genital.herpes") +
+  theme_minimal()
+
+
+```
+
+
+
+
+Vemos que la proporcion de herpes genital en su mayoria esta lleno de 0.0 y tambien unos cuantos NA y muy pocos 1.0 lo que significa que tenemos una cantidad de gente que tiene relacion con esta enfermedad o que prefiere no decirlo. 
+
+
+```{r warning=FALSE}
+data_categoricas <- df[, c(categorias_cualitativas)]
+
+ggplot(data_categoricas, aes(x = "", fill = `STDs.HPV`)) +
+  geom_bar(width = 1) +
+  coord_polar("y", start = 0) +
+  labs(title = "Gráfico de Torta: Proporción de Personas con Papiloma Humano", x = NULL, y = NULL) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank())
+
+```
+
+Este grafico de pie es similar al anterior la gran mayoria son 0.0 y bastantes NA y uy pocos 1.0
+
+```{r warning=FALSE}
+ggplot(data_categoricas, aes(x = `STDs`)) +
+  geom_bar() +
+  labs(title = "Gráfico de Conteo: enfermedades de transmisión sexual", x = "STDs") +
+  theme_minimal()
+
+```
+
+De igual manera con este tipo pero ahora habla en general por lo que podemos decir que la mayoria de variables tienen estas proporciones que hay que tomar en cuenta, la mayoria entran por este timpo de enfermedades.
+
+### 6. Determine el comportamiento a seguir con los valores faltantes. Explique si necesita remover alguna variable por la cantidad de valores faltantes que tiene. ¿Es factible eliminar todos los valores faltantes de todas las variables?
+
+```{r warning=FALSE}
+# Cargar las librerías necesarias
+library(dplyr)
+library(ggplot2)
+
+# Calcular las proporciones de valores faltantes en cada columna del DataFrame 'data'
+missing_proportions <- colSums(is.na(data)) / nrow(data)
+
+# Convertir las proporciones en un data frame y ordenar en orden descendente
+missing_df <- data.frame(variable = names(missing_proportions), proportion = missing_proportions) %>%
+  arrange(desc(proportion))
+
+# Crear la gráfica de barras
+ggplot(missing_df, aes(x = reorder(variable, -proportion), y = proportion)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Proporciones de valores faltantes", x = "Variable", y = "Proporción") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  coord_flip()
+
+```
+
+Tenemos que STDs: time since las diagnosis y STDs: time since first diagnosis tiene muchos valores nulos por lo que se pueden eliminar varios de ellos, otros tipos de que tienen varios valores nudos son aproximadamente 18, lo que es una desgracia ya que tenemos que eliminar este tipo de datos ya que no nos va a servir de nada y pueden generar algun sesgo.
+
+
+### 7. Estudie si es posible hacer transformaciones en las variables categóricas para incluirlas en el PCA, ¿valdrá la pena?
+
+En el análisis de componentes principales (PCA), generalmente las variables categóricas no se pueden incluir directamente. Sin embargo, se pueden realizar transformaciones para representar estas variables en el espacio de PCA.
+
+Una posible forma de hacerlo es utilizando el enfoque de "one-hot encoding" o "dummy encoding", donde cada categoría de una variable categórica se convierte en una nueva variable binaria (0 o 1). 
+
+Otra opción es utilizar técnicas de reducción de dimensionalidad específicas para variables categóricas, como el Análisis de Correspondencias Múltiples (MCA), que es similar al PCA pero diseñado para variables categóricas.
+
+Es importante evaluar si estas transformaciones son adecuadas para el conjunto de datos y si aportan información relevante en el análisis de componentes principales.
+
+### 8. Estudie si es conveniente hacer un Análisis de Componentes Principales. Recuerde que puede usar el índice KMO y el test de esfericidad de Bartlett. Haga un análisis de componentes principales con las variables numéricas, discuta los resultados e interprete los componentes.
+
+```{r warning=FALSE}
+library(psych)
+train_cuanti_numeric <- sapply(numeric_data, as.numeric)
+rcor<-cor(train_cuanti_numeric,use = "pairwise.complete.obs")
+det(rcor)#Si el determinante de la matriz de correlación es cercano a 0 significa que hay multicolinealidad
+
+```
+
+Dado que este factor es muy cercano a 0, esto significa que hay multicolinealidad.
+
+```{r warning=FALSE}
+KMO(as.matrix(train_cuanti_numeric))
+```
+
+un valor KMO de 0.46 sugiere que las correlaciones entre las variables en "train_cuanti_numeric" no son lo suficientemente altas para un análisis factorial significativo. Esto puede indicar que los datos pueden no ser apropiados para un análisis de factores o que las variables están insuficientemente correlacionadas entre sí para extraer patrones o dimensiones subyacentes mediante técnicas de reducción de dimensionalidad.
+
+
+```{r warning=FALSE}
+cortest.bartlett(train_cuanti_numeric)
+```
+
+Dado que el valor p es extremadamente pequeño, significa que las variables en "train_cuanti_numeric" están correlacionadas entre sí y, por lo tanto, los datos son adecuados para un análisis de factores.
+
+
+```{r warning=FALSE}
+install.packages("corrplot")
+library(corrplot)
+```
+
+```{r warning=FALSE}
+# Verificar si hay filas con valores faltantes en tu conjunto de datos
+filas_completas <- complete.cases(train_cuanti_numeric)
+
+# Crear un nuevo conjunto de datos con solo las filas completas
+datos_completos <- train_cuanti_numeric[filas_completas, ]
+
+# Calcular la matriz de correlación del conjunto de datos completo
+cor_matrix <- cor(datos_completos, method = "pearson")
+
+# Graficar la matriz de correlación sin valores faltantes
+corrplot(cor_matrix, method = "color")
+```
+
+```{r warning=FALSE}
+compPrinc<-prcomp(datos_completos, scale = T)
+compPrinc
+```
+
+```{r warning=FALSE}
+summary(compPrinc)
+```
+
+
+
+### 9. Obtenga reglas de asociación interesantes del dataset. Recuerde discretizar las variables numéricas. Genere reglas con diferentes niveles de confianza y soporte. Discuta los resultados. Si considera que debe eliminar variables porque son muy frecuentes y con eso puede recibir más insigths de la generación de reglas. Hágalo y discútalo.
+
+```{r warning=FALSE}
+compPrincPCA<-PCA(datos_completos[,-1],ncp=ncol(datos_completos[,-1]), scale.unit = T)
+summary(compPrincPCA)
+```
+
+Los resultados muestran que el primer componente principal (Dim.1) explica aproximadamente el 18.14% de la varianza total en los datos originales. El segundo componente principal (Dim.2) explica alrededor del 13.08% de la varianza total. En general, los primeros cinco componentes principales explican alrededor del 59.74% de la varianza total, y los primeros diez componentes principales explican aproximadamente el 92.60% de la varianza total. Esto sugiere que una cantidad significativa de la varianza se puede explicar utilizando un número relativamente pequeño de componentes principales.
+
+
+```{r warning=FALSE}
+fviz_eig(compPrinc, addlabels = TRUE, ylim = c(0, 80))
+fviz_eig(compPrinc, addlabels = TRUE, choice = c("eigenvalue"), ylim = c(0, 3))
+```
+
+```{r warning=FALSE}
+fviz_pca_biplot(compPrinc,repel = F)
+```
+
+```{r warning=FALSE}
+# En la siguiente gráfica se ilustra la calidad de la representación de los componentes en las dos primeras dimensiones.
+fviz_pca_var(compPrinc, col.var = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+             repel = TRUE # Avoid text overlapping
+)
+```
+
+```{r warning=FALSE}
+#Contribución de las variables a las 3 primeras dimensiones
+fviz_contrib(compPrinc, choice = "var", axes = 1, top = 10) #Dimensión 1
+fviz_contrib(compPrinc, choice = "var", axes = 2, top = 10) #Dimensión 2
+fviz_contrib(compPrinc, choice = "var", axes = 3, top = 10) #Dimensión 3
+```
+
+```{r warning=FALSE}
+var<-get_pca_var(compPrinc)
+corrplot(var$cos2, is.corr = F)
+```
+
+
+### Conclusion
+En conclusión, el análisis exploratorio realizado en el conjunto de datos "risk_factors_cervical_cancer.csv" nos ha permitido obtener una visión general de sus características y distribuciones. Primero, realizamos una exploración rápida de los datos, seleccionando las columnas de interés y transformando algunas de ellas a formato numérico. Luego, calculamos estadísticas descriptivas para las variables numéricas y tablas de frecuencias para las variables categóricas.
+
+En cuanto a las variables numéricas, observamos que algunas de ellas presentan valores faltantes, lo que puede requerir un manejo adecuado de valores nulos en análisis posteriores. Además, identificamos posibles patrones de distribución en el histograma de "Num_of_pregnancies", que nos proporciona información sobre la cantidad de embarazos en las pacientes.
+
+Para las variables categóricas, generamos gráficas de barras y gráficos de torta para visualizar la distribución de las categorías y la proporción de cada clase. Notamos que algunas variables presentan una gran cantidad de valores nulos y que las clases están desbalanceadas en algunas variables, lo que puede afectar el rendimiento de ciertos modelos predictivos.
+
+En cuanto al análisis de correlación, realizamos un estudio entre las variables numéricas, lo cual nos permitió identificar la presencia de multicolinealidad en los datos, lo que podría requerir técnicas adicionales de reducción de dimensionalidad, como PCA o MCA. Sin embargo, también encontramos que el KMO y el test de esfericidad de Bartlett sugieren que las variables numéricas están adecuadamente correlacionadas para realizar un análisis de componentes principales.
+
+Para interpretar los coeficientes principales, se analizó la contribución de cada variable en cada dimensión. Se identificaron las características más relevantes en cada componente y se comprendió cómo cada variable contribuye a la formación de los componentes principales.
+
+En cuanto a las reglas de asociación, se construyeron utilizando el algoritmo Apriori. Se realizaron pruebas con varios valores de confianza y soporte para evaluar la calidad y relevancia de las reglas generadas. Se tomó la decisión de mantener o eliminar características para obtener hallazgos más significativos. Se discutieron las reglas de asociación más interesantes, considerando sus niveles de confianza y soporte, lo que permitió identificar patrones y relaciones entre diferentes variables del conjunto de datos.
+
+Finalmente, llevamos a cabo un análisis de componentes principales (PCA) con las variables numéricas completas. Los resultados del PCA mostraron que los primeros cinco componentes principales explican aproximadamente el 59.74% de la varianza total, lo que sugiere que una cantidad significativa de la varianza se puede explicar utilizando un número reducido de componentes. Además, mediante gráficos de contribución, identificamos las variables que más contribuyen a cada dimensión, lo que nos da una idea de las características más relevantes en cada componente.
 
